@@ -4,7 +4,7 @@ import ldap from 'ldapjs';
 
 export async function POST(request: NextRequest) {
 	try {
-		const { cn, mail, telephoneNumber, mobile, title, departmentNumber } = await request.json();
+		const { uid, cn, mail, telephoneNumber, mobile, title, departmentNumber } = await request.json();
 		console.log('[EDIT] Получены данные:', { cn, mail, telephoneNumber, mobile, title, departmentNumber });
 		if (!cn) {
 			console.error('[EDIT] Не указано ФИО (cn)');
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 		const USER_OU = process.env.LDAP_USER_OU!;
 		const BIND_DN = 'cn=admin,' + BASE_DN;
 		const BIND_PASSWORD = process.env.LDAP_ADMIN_PASSWORD!;
-		const userDn = `cn=${cn},${USER_OU},${BASE_DN}`;
+		const userDn = `uid=${uid},${USER_OU},${BASE_DN}`;
 		console.log('[EDIT] userDn:', userDn);
 
 		// Авторизация админом

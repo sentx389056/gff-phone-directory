@@ -7,7 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 
 interface User {
-  cn: string;
+  cn: string
+  uid: string;
   mail?: string;
   telephoneNumber?: string;
   mobile?: string;
@@ -41,6 +42,7 @@ export default function Home() {
         <Table className="min-w-[700px]">
           <TableHeader>
             <TableRow>
+              <TableHead>uid</TableHead>
               <TableHead>ФИО</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Телефон</TableHead>
@@ -52,6 +54,7 @@ export default function Home() {
           <TableBody>
             {[...Array(5)].map((_, i) => (
               <TableRow key={i}>
+                <TableCell><Skeleton className="h-4 w-32 bg-muted/60 dark:bg-muted/30" /></TableCell>
                 <TableCell><Skeleton className="h-4 w-32 bg-muted/60 dark:bg-muted/30" /></TableCell>
                 <TableCell><Skeleton className="h-4 w-32 bg-muted/60 dark:bg-muted/30" /></TableCell>
                 <TableCell><Skeleton className="h-4 w-24 bg-muted/60 dark:bg-muted/30" /></TableCell>
@@ -77,6 +80,7 @@ export default function Home() {
           <Table className="min-w-[700px]">
             <TableHeader>
               <TableRow>
+                <TableHead>uid</TableHead>
                 <TableHead>ФИО</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Телефон</TableHead>
@@ -88,6 +92,7 @@ export default function Home() {
             <TableBody>
               {users.map((u, i) => (
                 <TableRow key={i}>
+                  <TableCell>{u.uid || '—'}</TableCell>
                   <TableCell>{u.cn || '—'}</TableCell>
                   <TableCell>{u.mail || '—'}</TableCell>
                   <TableCell>{u.telephoneNumber || '—'}</TableCell>

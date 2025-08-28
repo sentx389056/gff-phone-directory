@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 🔁 Теперь используем cn вместо uid
-    const userDn = `cn=${username},${USER_OU},${BASE_DN}`;
+    const userDn = `uid=${username},${USER_OU},${BASE_DN}`;
 
     console.log('Попытка входа:', userDn);
 

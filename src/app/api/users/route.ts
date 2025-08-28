@@ -73,11 +73,12 @@ function fetchUsersFromLDAP() {
       const searchOptions = {
         filter: '(objectClass=*)',
         scope: 'one' as const,
-        attributes: ['cn', 'mail', 'telephoneNumber', 'mobile', 'title', 'departmentNumber'],
+        attributes: ['cn', 'uid', 'mail', 'telephoneNumber', 'mobile', 'title', 'departmentNumber'],
       };
 
       const users: Array<{
         cn: string;
+        uid: string;
         mail?: string;
         telephoneNumber?: string;
         mobile?: string;
@@ -107,18 +108,18 @@ function fetchUsersFromLDAP() {
 
           res.on('searchEntry', (entry: any) => {
             console.log('🔍 SearchEntry event fired');
-            
+
             // Получаем DN как строку
             const dnString = entry.dn.toString();
             console.log('🔍 DN as string:', dnString);
-            
+
             // Извлекаем cn из DN
-            let cn = 'Unknown';
-            const cnMatch = dnString.match(/cn=([^,]+)/);
-            if (cnMatch) {
-              cn = cnMatch[1];
+            let uid = 'Unknown';
+            const uidMatch = dnString.match(/uid=([^,]+)/);
+            if (uidMatch) {
+              uid = uidMatch[1];
             }
-            
+
             // Получаем атрибуты из entry
             const attributes = entry.attributes || {};
             console.log('🔍 Entry attributes:', attributes);
@@ -126,8 +127,9 @@ function fetchUsersFromLDAP() {
             console.log('🔍 Mail attribute:', attributes.mail);
             console.log('🔍 Email attribute:', attributes.email);
             console.log('🔍 Telephone attribute:', attributes.telephoneNumber);
-            
+
             // Правильно извлекаем атрибуты из LdapAttribute объектов
+            let cn = 'Unknown';
             let mail = undefined;
             let telephoneNumber = undefined;
             let mobile = undefined;
@@ -135,7 +137,10 @@ function fetchUsersFromLDAP() {
             let departmentNumber = undefined;
 
             if (attributes && Array.isArray(attributes)) {
-              attributes.forEach((attr: any) => {
+              attributes.forEach((attr: any) => { 
+                if (attr.type === 'cn' && attr.values && attr.values.length > 0) {
+                  cn = attr.values[0];
+                }
                 if (attr.type === 'mail' && attr.values && attr.values.length > 0) {
                   mail = attr.values[0];
                 }
@@ -156,6 +161,7 @@ function fetchUsersFromLDAP() {
 
             users.push({
               cn: cn,
+              uid: uid,
               mail: mail,
               telephoneNumber: telephoneNumber,
               mobile: mobile,

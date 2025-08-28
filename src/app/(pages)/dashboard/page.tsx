@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Download, Upload } from "lucide-react";
 // CSV utils
 function usersToCSV(users: User[]): string {
-    const header = ["cn","mail","telephoneNumber","mobile","title","departmentNumber"];
+    const header = ["uid", "cn", "mail", "telephoneNumber", "mobile", "title", "departmentNumber"];
     // Добавляем пробел только к числовым полям для Excel
     const numericFields = new Set(["telephoneNumber", "mobile", "departmentNumber"]);
     const escape = (val: string, key: string) => {
@@ -20,14 +20,14 @@ function usersToCSV(users: User[]): string {
     };
     const rows = users.map(u => header.map(h => escape(u[h as keyof User]?.toString() ?? "", h)));
     // BOM + sep=; + заголовки + данные
-    return '\uFEFFsep=;\r\n' + header.join(";") + '\r\n' + rows.map(r => r.join(";")) .join("\r\n");
+    return '\uFEFFsep=;\r\n' + header.join(";") + '\r\n' + rows.map(r => r.join(";")).join("\r\n");
 }
 
 function csvToUsers(csv: string): User[] {
     let lines = csv.trim().split(/\r?\n/);
     let delimiter = ',';
     if (lines[0].toLowerCase().startsWith('sep=')) {
-        delimiter = lines[0].slice(4,5);
+        delimiter = lines[0].slice(4, 5);
         lines = lines.slice(1);
     }
     const [headerLine, ...dataLines] = lines;
@@ -39,7 +39,7 @@ function csvToUsers(csv: string): User[] {
         for (let i = 0; i < line.length; i++) {
             const char = line[i];
             if (char === '"') {
-                if (inQuotes && line[i+1] === '"') {
+                if (inQuotes && line[i + 1] === '"') {
                     cur += '"'; i++; // escaped quote
                 } else {
                     inQuotes = !inQuotes;
@@ -68,6 +68,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 
 interface User {
+    uid: string;
     cn: string;
     mail?: string;
     telephoneNumber?: string;
@@ -108,7 +109,7 @@ export default function Dashboard() {
                 const res = await fetch("/api/users");
                 const data = await res.json();
                 setUsers(data.users || []);
-            } catch {}
+            } catch { }
         }
     }, [loading]);
 
@@ -154,10 +155,11 @@ export default function Dashboard() {
     };
 
     if (loading) return (
-    <div className="relative p-5">
+        <div className="relative p-5">
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>uid</TableHead>
                         <TableHead>ФИО</TableHead>
                         <TableHead>Email</TableHead>
                         <TableHead>Телефон</TableHead>
@@ -186,7 +188,7 @@ export default function Dashboard() {
     );
 
     return (
-    <div className="p-5">
+        <div className="p-5">
             <Toaster position="top-right" richColors closeButton />
             <div className="flex items-center gap-4 mb-4">
                 <button
@@ -195,7 +197,7 @@ export default function Dashboard() {
                     className="flex items-center gap-1 px-3 py-1.5 rounded-md border border-border bg-background text-foreground hover:bg-accent transition-colors"
                     onClick={() => {
                         const csv = usersToCSV(users);
-                        const blob = new Blob([csv], {type:'text/csv'});
+                        const blob = new Blob([csv], { type: 'text/csv' });
                         const url = URL.createObjectURL(blob);
                         const a = document.createElement('a');
                         a.href = url;
@@ -204,10 +206,10 @@ export default function Dashboard() {
                         URL.revokeObjectURL(url);
                     }}
                 >
-                    <Download size={16}/> Экспорт
+                    <Download size={16} /> Экспорт
                 </button>
                 <label className="flex items-center gap-1 px-3 py-1.5 rounded-md border border-border bg-background text-foreground hover:bg-accent transition-colors cursor-pointer">
-                    <Upload size={16}/> Импорт
+                    <Upload size={16} /> Импорт
                     <input type="file" accept=".csv" className="hidden"
                         onChange={async e => {
                             const file = e.target.files?.[0];
@@ -238,12 +240,12 @@ export default function Dashboard() {
                                 }
                                 // Показать подробный результат
                                 if (result.results && Array.isArray(result.results)) {
-                                    const created = result.results.filter((r:any) => r.status === 'created').length;
-                                    const updated = result.results.filter((r:any) => r.status === 'updated').length;
-                                    const errors = result.results.filter((r:any) => r.status === 'error');
+                                    const created = result.results.filter((r: any) => r.status === 'created').length;
+                                    const updated = result.results.filter((r: any) => r.status === 'updated').length;
+                                    const errors = result.results.filter((r: any) => r.status === 'error');
                                     toast.info(`Создано: ${created}, обновлено: ${updated}${errors.length ? ', ошибок: ' + errors.length : ''}`);
                                     if (errors.length) {
-                                        errors.forEach((e:any) => toast.error(`Ошибка для ${e.cn}: ${e.error}`));
+                                        errors.forEach((e: any) => toast.error(`Ошибка для ${e.cn}: ${e.error}`));
                                     }
                                 } else {
                                     toast.success('Импортировано сотрудников: ' + imported.length);
@@ -262,6 +264,7 @@ export default function Dashboard() {
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>uid</TableHead>
                         <TableHead>ФИО</TableHead>
                         <TableHead>Email</TableHead>
                         <TableHead>Телефон</TableHead>
@@ -276,6 +279,9 @@ export default function Dashboard() {
                         <TableRow key={i}>
                             {editIdx === i ? (
                                 <>
+                                    <TableCell>
+                                        <Input name="uid" value={editUser?.uid || ""} onChange={handleChange} />
+                                    </TableCell>
                                     <TableCell>
                                         <Input name="cn" value={editUser?.cn || ""} onChange={handleChange} />
                                     </TableCell>
@@ -301,6 +307,7 @@ export default function Dashboard() {
                                 </>
                             ) : (
                                 <>
+                                    <TableCell>{u.uid || "—"}</TableCell>
                                     <TableCell>{u.cn || "—"}</TableCell>
                                     <TableCell>{u.mail || "—"}</TableCell>
                                     <TableCell>{u.telephoneNumber || "—"}</TableCell>

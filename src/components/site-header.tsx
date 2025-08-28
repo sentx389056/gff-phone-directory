@@ -2,7 +2,7 @@
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 
-import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { ModeToggle } from "@/components/ui/mode-toggle"
 
 
 import * as React from "react"
@@ -64,7 +64,7 @@ export function SiteHeader() {
         </span>
         <div className="ml-auto flex items-center gap-3">
           <LoginForm/>
-          <ThemeToggle />
+          <ModeToggle/>
         </div>
       </div>
     </header>
