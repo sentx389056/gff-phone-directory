@@ -41,7 +41,7 @@ function fetchUsersFromLDAP() {
       connectTimeout: 3000,
     });
 
-    const BASE_DN = 'ou=People,dc=localdomain,dc=local';
+    const BASE_DN = 'ou=groups,dc=localdomain,dc=local';
     const BIND_DN = 'cn=admin,dc=localdomain,dc=local';
     const BIND_PASSWORD = process.env.LDAP_ADMIN_PASSWORD!;
 

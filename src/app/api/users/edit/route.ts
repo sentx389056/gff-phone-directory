@@ -45,51 +45,51 @@ export async function POST(request: NextRequest) {
 
 		// Формируем изменения
 		const changes: ldap.Change | ldap.Change[] = [];
-									if (mail !== undefined) {
-										changes.push(new ldap.Change({
-											operation: 'replace',
-											modification: new ldap.Attribute({
-												type: 'mail',
-												values: [mail || '']
-											})
-										}));
-									}
-									if (telephoneNumber !== undefined) {
-										changes.push(new ldap.Change({
-											operation: 'replace',
-											modification: new ldap.Attribute({
-												type: 'telephoneNumber',
-												values: [telephoneNumber || '']
-											})
-										}));
-									}
-									if (mobile !== undefined) {
-										changes.push(new ldap.Change({
-											operation: 'replace',
-											modification: new ldap.Attribute({
-												type: 'mobile',
-												values: [mobile || '']
-											})
-										}));
-									}
-									if (title !== undefined) {
-										changes.push(new ldap.Change({
-											operation: 'replace',
-											modification: new ldap.Attribute({
-												type: 'title',
-												values: [title || '']
-											})
-										}));
-									}
-									if (departmentNumber !== undefined) {
-										changes.push(new ldap.Change({
-											operation: 'replace',
-											modification: new ldap.Attribute({
-												type: 'departmentNumber',
-												values: [departmentNumber || '']
-											})
-										}));
-									}
+		if (mail !== undefined) {
+			changes.push(new ldap.Change({
+				operation: 'replace',
+				modification: new ldap.Attribute({
+					type: 'mail',
+					values: [mail || '']
+				})
+			}));
+		}
+		if (telephoneNumber !== undefined) {
+			changes.push(new ldap.Change({
+				operation: 'replace',
+				modification: new ldap.Attribute({
+					type: 'telephoneNumber',
+					values: [telephoneNumber || '']
+				})
+			}));
+		}
+		if (mobile !== undefined) {
+			changes.push(new ldap.Change({
+				operation: 'replace',
+				modification: new ldap.Attribute({
+					type: 'mobile',
+					values: [mobile || '']
+				})
+			}));
+		}
+		if (title !== undefined) {
+			changes.push(new ldap.Change({
+				operation: 'replace',
+				modification: new ldap.Attribute({
+					type: 'title',
+					values: [title || '']
+				})
+			}));
+		}
+		if (departmentNumber !== undefined) {
+			changes.push(new ldap.Change({
+				operation: 'replace',
+				modification: new ldap.Attribute({
+					type: 'departmentNumber',
+					values: [departmentNumber || '']
+				})
+			}));
+		}
 		if (changes.length === 0) {
 			client.unbind();
 			console.warn('[EDIT] Нет изменений для применения');

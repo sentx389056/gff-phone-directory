@@ -314,8 +314,30 @@ export default function Dashboard() {
                                     <TableCell>{u.mobile || "—"}</TableCell>
                                     <TableCell>{u.title || "—"}</TableCell>
                                     <TableCell>{u.departmentNumber || "—"}</TableCell>
-                                    <TableCell>
+                                    <TableCell className="flex gap-2">
                                         <Button variant="outline" onClick={() => handleEdit(i)}>Редактировать</Button>
+                                        <Button variant="destructive" onClick={async () => {
+                                            if (!window.confirm(`Удалить пользователя ${u.cn}?`)) return;
+                                            try {
+                                                const res = await fetch('/api/users/delete', {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify({ uid: u.uid, cn: u.cn })
+                                                });
+                                                if (!res.ok) {
+                                                    const err = await res.json();
+                                                    toast.error('Ошибка удаления: ' + (err.error || res.status));
+                                                    return;
+                                                }
+                                                toast.success('Пользователь удалён');
+                                                // Обновить таблицу
+                                                const usersRes = await fetch('/api/users');
+                                                const usersData = await usersRes.json();
+                                                setUsers(usersData.users || []);
+                                            } catch {
+                                                toast.error('Ошибка удаления на сервере');
+                                            }
+                                        }}>Удалить</Button>
                                     </TableCell>
                                 </>
                             )}
