@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  ldap:
+    image: osixia/openldap:latest
+    container_name: ldap-server
+    environment:
+      - LDAP_ORGANISATION=My Home Lab
+      - LDAP_DOMAIN=localdomain.local
+      - LDAP_ADMIN_PASSWORD=admin
+      - LDAP_READONLY_USER=true
+      - LDAP_READONLY_USER_USERNAME=readonly
+      - LDAP_READONLY_USER_PASSWORD=readonly
+    ports:
+      - "127.0.0.1:389:389"     # Только localhost!
+      - "127.0.0.1:636:636"
+    volumes:
+      - ldap-data:/var/lib/ldap
+      - ldap-config:/etc/ldap/slapd.d
+    restart: unless-stopped
+
+  phpldapadmin:
+    image: osixia/phpldapadmin:latest
+    container_name: phpldapadmin
+    environment:
+      - PHPLDAPADMIN_LDAP_HOSTS=ldap
+      - PHPLDAPADMIN_HTTPS=false
+    ports:
+      - "127.0.0.1:8080:80"     # Только localhost!
+    depends_on:
+      - ldap
+    restart: unless-stopped
+
+volumes:
+  ldap-data:
+  ldap-config:
