@@ -105,7 +105,7 @@ export default function Home() {
       ) : users.length === 0 ? (
         <p>Пользователи не найдены</p>
       ) : (
-        <div className="w-full overflow-x-auto max-h-[85vh]">
+        <div className="w-full overflow-x-auto max-h-[84vh]">
           <Table className="">
             <TableHeader className=''>
               <TableRow>
