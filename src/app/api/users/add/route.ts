@@ -17,8 +17,11 @@ export async function POST(request: NextRequest) {
       const uid = makeUid(cn);
       const sn = cn;
       const BASE_DN = process.env.LDAP_BASE_DN!;
-      const BIND_DN = 'cn=admin,' + BASE_DN;
-      const BIND_PASSWORD = process.env.LDAP_ADMIN_PASSWORD!;
+      const BIND_DN = process.env.LDAP_BIND_DN || (process.env.LDAP_BASE_DN ? `cn=admin,${process.env.LDAP_BASE_DN}` : undefined);
+      const BIND_PASSWORD = process.env.LDAP_BIND_PASSWORD || process.env.LDAP_ADMIN_PASSWORD;
+      if (!BIND_DN || !BIND_PASSWORD) {
+         return NextResponse.json({ error: 'LDAP bind не настроен' }, { status: 500 });
+      }
       const client = ldap.createClient({
          url: process.env.LDAP_URI!,
          timeout: 3000,

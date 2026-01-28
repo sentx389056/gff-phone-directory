@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "sync-config": "node ./scripts/sync-inc-config.mjs",
+    "predev": "npm run sync-config",
+    "prebuild": "npm run sync-config",
+    "prestart": "npm run sync-config",
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",

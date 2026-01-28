@@ -80,10 +80,13 @@ interface User {
     cn: string;
     sn: string;
     dn: string;
+    displayName?: string;
     mail?: string;
     telephoneNumber?: string;
+    ipPhone?: string;
     mobile?: string;
     title?: string;
+    department?: string;
     departmentNumber?: string;
     role?: string;
 }
@@ -232,6 +235,7 @@ export default function Dashboard() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>ФИО</TableHead>
+                        <TableHead>Внутренний телефон</TableHead>
                         <TableHead>Телефон</TableHead>
                         <TableHead>Мобильный</TableHead>
                         <TableHead>Email</TableHead>
@@ -243,6 +247,7 @@ export default function Dashboard() {
                 <TableBody>
                     {[...Array(6)].map((_, i) => (
                         <TableRow key={i}>
+                            <TableCell><Skeleton className="h-4 w-32 bg-muted/60 dark:bg-muted/30" /></TableCell>
                             <TableCell><Skeleton className="h-4 w-32 bg-muted/60 dark:bg-muted/30" /></TableCell>
                             <TableCell><Skeleton className="h-4 w-32 bg-muted/60 dark:bg-muted/30" /></TableCell>
                             <TableCell><Skeleton className="h-4 w-24 bg-muted/60 dark:bg-muted/30" /></TableCell>
@@ -395,6 +400,7 @@ export default function Dashboard() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>ФИО</TableHead>
+                        <TableHead>Внутренний телефон</TableHead>
                         <TableHead>Телефон</TableHead>
                         <TableHead>Мобильный</TableHead>
                         <TableHead>Email</TableHead>
@@ -412,6 +418,9 @@ export default function Dashboard() {
                                     <input type="hidden" name="uid" value={editUser?.uid || ""} />
                                     <TableCell>
                                         <Input name="sn" value={editUser?.sn || ""} onChange={handleChange} />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Input name="ipPhone" value={editUser?.ipPhone || ""} onChange={handleChange} />
                                     </TableCell>
                                     <TableCell>
                                         <Input name="telephoneNumber" value={editUser?.telephoneNumber || ""} onChange={handleChange} />
@@ -435,12 +444,13 @@ export default function Dashboard() {
                                 </>
                             ) : (
                                 <>
-                                    <TableCell>{u.sn || "—"}</TableCell>
+                                    <TableCell>{u.displayName || u.cn || u.sn || "—"}</TableCell>
+                                    <TableCell>{u.ipPhone || "—"}</TableCell>
                                     <TableCell>{u.telephoneNumber || "—"}</TableCell>
                                     <TableCell>{u.mobile || "—"}</TableCell>
                                     <TableCell>{u.mail || "—"}</TableCell>
                                     <TableCell>{u.title || "—"}</TableCell>
-                                    <TableCell>{u.departmentNumber || "—"}</TableCell>
+                                    <TableCell>{u.department || u.departmentNumber || "—"}</TableCell>
                                     <TableCell>{u.role || "—"}</TableCell>
                                     <TableCell className="flex gap-2">
                                         <Button variant="outline" onClick={() => handleEdit(i)}>Редактировать</Button>

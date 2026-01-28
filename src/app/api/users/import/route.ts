@@ -9,14 +9,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Проверка переменных окружения
-    if (!process.env.LDAP_URI || !process.env.LDAP_BASE_DN || !process.env.LDAP_USER_OU || !process.env.LDAP_ADMIN_PASSWORD) {
+    if (!process.env.LDAP_URI || !process.env.LDAP_BASE_DN || !process.env.LDAP_USER_OU || (!process.env.LDAP_BIND_PASSWORD && !process.env.LDAP_ADMIN_PASSWORD)) {
       return NextResponse.json({ error: 'LDAP не настроен' }, { status: 500 });
     }
 
     const BASE_DN = process.env.LDAP_BASE_DN!;
     const USER_OU = process.env.LDAP_USER_OU!;
-    const BIND_DN = 'cn=admin,' + BASE_DN;
-    const BIND_PASSWORD = process.env.LDAP_ADMIN_PASSWORD!;
+    const BIND_DN = process.env.LDAP_BIND_DN || (process.env.LDAP_BASE_DN ? `cn=admin,${process.env.LDAP_BASE_DN}` : undefined);
+    const BIND_PASSWORD = process.env.LDAP_BIND_PASSWORD || process.env.LDAP_ADMIN_PASSWORD;
+    if (!BIND_DN || !BIND_PASSWORD) {
+      return NextResponse.json({ error: 'LDAP bind не настроен' }, { status: 500 });
+    }
 
     // Для каждого пользователя: попытка обновить, если не найден — создать
     const results = [];
@@ -36,7 +39,7 @@ export async function POST(request: NextRequest) {
           });
         });
         // Формируем изменения
-        const changes = [];
+        const changes: ldap.Change[] = [];
         if (user.mail && typeof user.mail === 'string' && user.mail.trim()) {
           changes.push(new ldap.Change({
             operation: 'replace',

@@ -34,23 +34,35 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased min-h-screen flex`}>
-        <SidebarProvider>
+        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+        >
+          <SiteHeader />
+          {children}
+
+        </ThemeProvider>
+        {/* <SidebarProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
           >
             <AppSidebar variant="inset" />
-            <div className="flex-1 flex flex-col min-h-screen">
               <SidebarInset>
                 <SiteHeader />
                 {children}
               </SidebarInset>
-            </div>
+            <AppSidebar variant="inset" />
+              <SidebarInset>
+                <SiteHeader />
+                {children}
+              </SidebarInset>
           </ThemeProvider>
 
-        </SidebarProvider>
+        </SidebarProvider> */}
       </body>
     </html>
   );
