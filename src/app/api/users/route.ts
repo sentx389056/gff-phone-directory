@@ -133,7 +133,7 @@ function fetchUsersFromLDAP(search: string) {
         filter,
         attributes,
       });
-      console.log('🔎 Will search for displayName in filter:', filter.includes('displayName'));
+      console.log('🔎 Full filter sent to LDAP:', filter);
       const searchOptions = {
         filter,
         scope: 'sub' as const,
