@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import ldap from 'ldapjs';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   if (!process.env.LDAP_URI ||
     !process.env.LDAP_BASE_DN ||
@@ -13,10 +15,10 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search')?.trim() || '';
 
-  const timeout = new Promise((_, reject) => {
+  const timeout = new Promise<Response>((_, reject) => {
     setTimeout(() => {
       reject(new Error('Таймаут подключения к LDAP'));
-    }, 5000);
+    }, 15000);
   });
 
   try {
@@ -33,16 +35,16 @@ export async function GET(request: Request) {
   }
 }
 
-function fetchUsersFromLDAP(search: string) {
-  return new Promise((resolve) => {
+function fetchUsersFromLDAP(search: string): Promise<Response> {
+  return new Promise<Response>((resolve) => {
     // Функция экранирования спецсимволов для LDAP-фильтра
     function escapeLDAP(val: string) {
       return val.replace(/[*()\\]/g, '\\$&');
     }
     const client = ldap.createClient({
       url: process.env.LDAP_URI!,
-      timeout: 3000,
-      connectTimeout: 3000,
+      timeout: 10000,
+      connectTimeout: 10000,
     });
 
     const BASE_DN = process.env.LDAP_SEARCH_BASE_DN || `${process.env.LDAP_USER_OU},${process.env.LDAP_BASE_DN}`;
@@ -77,7 +79,7 @@ function fetchUsersFromLDAP(search: string) {
           { status: 504 }
         )
       );
-    }, 5000);
+    }, 12000);
 
     client.bind(BIND_DN, BIND_PASSWORD, (err: Error | null | undefined) => {
       if (err) {

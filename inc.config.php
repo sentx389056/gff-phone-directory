@@ -18,7 +18,7 @@
 	define('LDAP_BASE_DN', 'DC=GFF-RF,DC=RU');
 	define('LDAP_BASE_FILTER', '(&(objectCategory=person)(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))');
 	//  define('LDAP_FILTER', '(&(objectCategory=person)(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2))(|(telephoneNumber=*)(mobile=*)(ipPhone=*)))');
-	define('LDAP_ATTRS', 'samAccountName,ou,sn,givenName,displayName,mail,department,company,title,telephoneNumber,mobile,ipPhone,thumbnailPhoto,userAccountControl');
+	define('LDAP_ATTRS', 'samAccountName,ou,sn,givenName,displayName,mail,department,company,title,telephoneNumber,mobile,ipPhone,userAccountControl');
 	define('LDAP_ADMIN_GROUP_DN', 'CN=Phonebook admin,OU=Admin Roles,OU=Groups,OU=Company,DC=domain,DC=local');
 
 	define('MAIL_HOST', 'smtp.yandex.ru');
