@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
-import { ThemeProvider } from "next-themes";
+import {ThemeProvider} from "@/components/theme-provider";
 
 
 const geistSans = Geist({
@@ -33,15 +33,18 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}>
+        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} max-h-screen antialiased scrollbar-hide`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
         >
-          <SiteHeader />
-          {children}
-
+          <div className="flex flex-col h-dvh overflow-hidden">
+            <SiteHeader />
+            <main className="flex-1 overflow-hidden">
+              {children}
+            </main>
+          </div>
         </ThemeProvider>
       </body>
     </html>

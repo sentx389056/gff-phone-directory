@@ -62,12 +62,12 @@ export default function Home() {
   }, [users, search]);
 
   const thClass = 'border-x bg-accent sticky top-0 z-10 text-center text-xs md:text-sm p-1 md:p-2';
-  const thHidden = 'hidden md:table-cell';
+  const thHidden = 'hidden xl:table-cell';
   const tdClass = 'border whitespace-normal text-xs md:text-sm p-1 md:p-2';
-  const tdHidden = 'hidden md:table-cell';
+  const tdHidden = 'hidden xl:table-cell';
 
   return (
-    <div className="p-2 md:p-5">
+    <div className="flex flex-col h-full p-2 md:p-5 overflow-hidden">
       <Input
         type="text"
         placeholder="Поиск..."
@@ -107,7 +107,7 @@ export default function Home() {
       ) : filteredUsers.length === 0 ? (
         <p>Пользователи не найдены</p>
       ) : (
-        <div className="w-full overflow-y-auto max-h-[84vh]">
+        <div className="flex-1 overflow-y-auto scrollbar-hide">
           <Table className="table-fixed w-full">
             <TableHeader>
               <TableRow>
@@ -134,22 +134,22 @@ export default function Home() {
                       className="cursor-pointer"
                       onClick={() => setExpandedRow(isExpanded ? null : i)}
                     >
-                      <TableCell className={tdClass}>{u.displayName || u.cn || u.sn || ''}</TableCell>
-                      <TableCell className={tdClass}>{u.telephoneNumber || ''}</TableCell>
-                      <TableCell className={tdClass}>{u.ipPhone || ''}</TableCell>
-                      <TableCell className={`${tdClass} ${tdHidden}`}>{u.mobile || ''}</TableCell>
-                      <TableCell className={`${tdClass} break-all`}>{u.mail || ''}</TableCell>
+                      <TableCell className={`${tdClass}`}>{u.displayName || u.cn || u.sn || ''}</TableCell>
+                      <TableCell className={`${tdClass} text-center`}>{u.telephoneNumber || ''}</TableCell>
+                      <TableCell className={`${tdClass} text-center`}>{u.ipPhone || ''}</TableCell>
+                      <TableCell className={`${tdClass} ${tdHidden} text-center`}>{u.mobile || ''}</TableCell>
+                      <TableCell className={`${tdClass} text-center break-all`}>{u.mail || ''}</TableCell>
                       <TableCell className={`${tdClass} ${tdHidden}`}>{u.title || ''}</TableCell>
                       <TableCell className={`${tdClass} ${tdHidden}`}>{u.department || u.departmentNumber || ''}</TableCell>
                     </TableRow>
                     {isExpanded && details.length > 0 && (
-                      <TableRow className="md:hidden bg-muted/30">
+                      <TableRow className="xl:hidden bg-muted/30">
                         <TableCell colSpan={4} className="p-2 text-xs">
                           <div className="space-y-1">
                             {details.map((d) => (
-                              <div key={d.label} className="flex justify-between">
-                                <span className="text-muted-foreground">{d.label}</span>
-                                <span className="break-all text-right ml-2">{d.value}</span>
+                              <div key={d.label} className="flex flex-col">
+                                <span className="text-muted-foreground whitespace-normal">{d.label}</span>
+                                <span className="break-all whitespace-normal my-1">{d.value}</span>
                               </div>
                             ))}
                           </div>
