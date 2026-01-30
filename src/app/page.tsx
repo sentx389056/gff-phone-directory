@@ -1,6 +1,7 @@
 "use client";
 
-import { Fragment, useEffect, useState, useMemo } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import { ArrowUp } from 'lucide-react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from '@/components/ui/input';
@@ -25,6 +26,18 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollToTop = useCallback(() => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => {
+    const handler = () => scrollToTop();
+    window.addEventListener('scroll-to-top', handler);
+    return () => window.removeEventListener('scroll-to-top', handler);
+  }, [scrollToTop]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -107,7 +120,14 @@ export default function Home() {
       ) : filteredUsers.length === 0 ? (
         <p>Пользователи не найдены</p>
       ) : (
-        <div className="flex-1 overflow-y-auto scrollbar-hide">
+        <div
+          ref={scrollRef}
+          className="relative w-full overflow-y-auto max-h-[84vh]"
+          onScroll={(e) => {
+            const target = e.target as HTMLDivElement;
+            setShowScrollTop(target.scrollTop > 300);
+          }}
+        >
           <Table className="table-fixed w-full">
             <TableHeader>
               <TableRow>
@@ -161,6 +181,15 @@ export default function Home() {
               })}
             </TableBody>
           </Table>
+          {showScrollTop && (
+            <button
+              onClick={scrollToTop}
+              className="sticky bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-4 py-2 rounded-full bg-primary text-primary-foreground shadow-lg hover:opacity-90 transition-opacity text-sm cursor-pointer"
+            >
+              <ArrowUp className="h-4 w-4" />
+              Наверх
+            </button>
+          )}
         </div>
       )}
     </div>
