@@ -193,7 +193,7 @@ export default function Home() {
           {showScrollTop && (
             <button
               onClick={scrollToTop}
-              className="sticky bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-4 py-2 rounded-full bg-primary text-primary-foreground shadow-lg hover:opacity-90 transition-opacity text-sm cursor-pointer"
+              className="duration-200 sticky bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-4 py-2 rounded-full bg-primary text-primary-foreground shadow-lg hover:opacity-90  text-sm cursor-pointer"
             >
               <ArrowUp className="h-4 w-4" />
               Наверх
