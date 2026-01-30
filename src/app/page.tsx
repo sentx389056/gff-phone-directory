@@ -5,6 +5,7 @@ import { ArrowUp } from 'lucide-react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 interface User {
   cn: string
@@ -62,9 +63,10 @@ export default function Home() {
   }, []);
 
   const filteredUsers = useMemo(() => {
+    const withTitle = users.filter((u) => u.title && u.title.trim().length > 0);
     const q = search.toLowerCase().trim();
-    if (!q) return users;
-    return users.filter((u) => {
+    if (!q) return withTitle;
+    return withTitle.filter((u) => {
       const fields = [
         u.displayName, u.cn, u.sn, u.uid,
         u.mail, u.telephoneNumber, u.ipPhone, u.mobile,
@@ -81,13 +83,20 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-full p-2 md:p-5 overflow-hidden">
-      <Input
-        type="text"
-        placeholder="Поиск..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        className="mb-4 px-3 py-2 border rounded w-full max-w-md text-sm md:text-base"
-      />
+      <div className="flex items-center gap-2 mb-4 w-full max-w-md">
+        <Input
+          type="text"
+          placeholder="Поиск..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="px-3 py-2 border rounded w-full text-sm md:text-base"
+        />
+          <Button
+            onClick={() => setSearch("")}
+          >
+            Сбросить
+          </Button>
+      </div>
       {loading ? (
         <Table className="table-fixed w-full">
           <TableHeader>
