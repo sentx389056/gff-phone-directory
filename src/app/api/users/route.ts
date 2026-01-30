@@ -99,15 +99,10 @@ function fetchUsersFromLDAP(search: string): Promise<Response> {
         );
       }
 
-      // Формируем фильтр поиска
-      const baseFilter = (process.env.LDAP_BASE_FILTER && process.env.LDAP_BASE_FILTER.trim().length > 0)
+      // Формируем фильтр: используем LDAP_BASE_FILTER (все активные пользователи)
+      let filter = (process.env.LDAP_BASE_FILTER && process.env.LDAP_BASE_FILTER.trim().length > 0)
         ? process.env.LDAP_BASE_FILTER.trim()
-        : '(&(objectCategory=person)(objectClass=user))';
-
-      // Если задан LDAP_FILTER (например, только с телефонами), используем его; иначе — baseFilter
-      let filter = process.env.LDAP_FILTER && process.env.LDAP_FILTER.trim().length > 0
-        ? process.env.LDAP_FILTER.trim()
-        : baseFilter;
+        : '(&(objectCategory=person)(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))';
       if (search && search.length > 0) {
         const esc = escapeLDAP(search);
         const searchFilter = `(|
