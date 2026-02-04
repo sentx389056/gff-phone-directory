@@ -1,11 +1,13 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useRef, useState, useMemo } from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, ChevronUp, ChevronDown } from 'lucide-react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 interface User {
   cn: string
@@ -21,13 +23,19 @@ interface User {
   departmentNumber?: string;
 }
 
+type SortKey = 'displayName';
+type SortDir = 'asc' | 'desc';
+
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("Все");
   const [error, setError] = useState<string | null>(null);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scrollToTop = useCallback(() => {
@@ -62,40 +70,87 @@ export default function Home() {
     fetchUsers();
   }, []);
 
+  const handleSort = useCallback((key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  }, [sortKey]);
+
   const filteredUsers = useMemo(() => {
     const withTitle = users.filter((u) => u.title && u.title.trim().length > 0);
+    let result = withTitle;
+
+    if (selectedDepartment && selectedDepartment !== 'Все') {
+      result = result.filter((u) => {
+        const dept = u.department || u.departmentNumber || '';
+        return dept === selectedDepartment;
+      });
+    }
+
     const q = search.toLowerCase().trim();
-    if (!q) return withTitle;
-    return withTitle.filter((u) => {
-      const fields = [
-        u.displayName, u.cn, u.sn, u.uid,
-        u.mail, u.telephoneNumber, u.ipPhone, u.mobile,
-        u.title, u.department, u.departmentNumber,
-      ];
-      return fields.some((f) => f && f.toLowerCase().includes(q));
-    });
-  }, [users, search]);
+    if (q) {
+      result = result.filter((u) => {
+        const fields = [
+          u.displayName, u.cn, u.sn, u.uid,
+          u.mail, u.telephoneNumber, u.ipPhone, u.mobile,
+          u.title, u.department, u.departmentNumber,
+        ];
+        return fields.some((f) => f && f.toLowerCase().includes(q));
+      });
+    }
+
+    if (sortKey) {
+      result = [...result].sort((a, b) => {
+        const valA = a.displayName || a.cn || a.sn || '';
+        const valB = b.displayName || b.cn || b.sn || '';
+        const cmp = valA.localeCompare(valB, 'ru');
+        return sortDir === 'asc' ? cmp : -cmp;
+      });
+    }
+
+    return result;
+  }, [users, search, selectedDepartment, sortKey, sortDir]);
 
   const thClass = 'border-x bg-accent sticky top-0 z-10 text-center text-xs md:text-sm p-1 md:p-2';
+  const thSortable = 'cursor-pointer select-none hover:bg-accent/80';
   const thHidden = 'hidden xl:table-cell';
   const tdClass = 'border whitespace-normal text-xs md:text-sm p-1 md:p-2';
   const tdHidden = 'hidden xl:table-cell';
 
+  const SortIcon = ({ column }: { column: SortKey }) => {
+    if (sortKey !== column) return <ChevronUp className="inline h-3 w-3 opacity-25 ml-0.5" />;
+    return sortDir === 'asc'
+      ? <ChevronUp className="inline h-3 w-3 ml-0.5" />
+      : <ChevronDown className="inline h-3 w-3 ml-0.5" />;
+  };
+
   return (
     <div className="flex flex-col h-full p-2 md:p-5 overflow-hidden">
-      <div className="flex items-center gap-2 mb-4 w-full max-w-md">
-        <Input
-          type="text"
-          placeholder="Поиск..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="px-3 py-2 border rounded w-full text-sm md:text-base"
-        />
+      <div className="flex flex-wrap justify-between items-center gap-2 mb-4 w-full">
+        <div className='flex gap-3'>
+          <Input
+            type="text"
+            placeholder="Поиск..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="px-3 py-2 border rounded w-full max-w-xs text-sm md:text-base"
+          />
           <Button
-            onClick={() => setSearch("")}
+            onClick={() => { setSearch(""); setSelectedDepartment("Все"); setSortKey(null); setSortDir('asc'); }}
           >
             Сбросить
           </Button>
+          <Button
+            variant="outline"
+            onClick={() => {setSelectedDepartment("Отдел сопровождения и развития информационных систем"); setSearch("")}}
+          >
+            IT-отдел
+          </Button>
+        </div>
+
       </div>
       {loading ? (
         <Table className="table-fixed w-full">
@@ -127,7 +182,7 @@ export default function Home() {
       ) : error ? (
         <p>{error}</p>
       ) : filteredUsers.length === 0 ? (
-        <p>Пользователи не найдены</p>
+        <p>Сотрудники не найдены</p>
       ) : (
         <div
           ref={scrollRef}
@@ -140,7 +195,7 @@ export default function Home() {
           <Table className="table-fixed w-full">
             <TableHeader>
               <TableRow>
-                <TableHead className={thClass}>ФИО</TableHead>
+                <TableHead className={`${thClass} ${thSortable}`} onClick={() => handleSort('displayName')}>ФИО<SortIcon column="displayName" /></TableHead>
                 <TableHead className={thClass}>Телефон</TableHead>
                 <TableHead className={thClass}>Доб. телефон</TableHead>
                 <TableHead className={`${thClass} ${thHidden}`}>Мобильный</TableHead>
