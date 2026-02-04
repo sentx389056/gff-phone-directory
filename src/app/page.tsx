@@ -143,11 +143,32 @@ export default function Home() {
           >
             Сбросить
           </Button>
+
+        </div>
+        <div className='flex flex-wrap gap-3'>
           <Button
             variant="outline"
-            onClick={() => {setSelectedDepartment("Отдел сопровождения и развития информационных систем"); setSearch("")}}
+            onClick={() => { setSelectedDepartment("Отдел сопровождения и развития информационных систем"); setSearch("") }}
           >
             IT-отдел
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => { setSelectedDepartment("Бухгалтерия"); setSearch("") }}
+          >
+            Бухгалтерия
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => { setSelectedDepartment("Отдел делопроизводства и электронного документооборота"); setSearch("") }}
+          >
+           Делопроизводство 
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => { setSelectedDepartment("Отдел кадров"); setSearch("") }}
+          >
+            Отдел кадров
           </Button>
         </div>
 
